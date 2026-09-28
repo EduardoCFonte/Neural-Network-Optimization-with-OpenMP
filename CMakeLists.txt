@@ -12,11 +12,15 @@ endif()
 # Find OpenMP for multithreading and timing support
 find_package(OpenMP REQUIRED)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/matrix)
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/matrix
+    ${CMAKE_CURRENT_SOURCE_DIR}/OpenMP_matrix.cpp
+)
 
 set(SOURCES
     main.cpp
     matrix/matrix.cpp
+    OpenMP_matrix.cpp/buffed_matrix.cpp
 )
 
 add_executable(nn_inference ${SOURCES})
