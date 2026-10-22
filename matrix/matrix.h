@@ -13,7 +13,7 @@ public:
     Matrix(int r, int c);
     ~Matrix() = default;
 
-    // Fast element access (r: row, c: column)
+    // Element at row r, column c.
     inline float& operator()(int r, int c) {
         return data[r * cols + c];
     }
@@ -22,6 +22,6 @@ public:
         return data[r * cols + c];
     }
 
-    // Forward pass: Y = ReLU(X * W + b)
+    // Y = ReLU(X * W + b)
     std::vector<float> forward_pass(const std::vector<float>& input) const;
 };

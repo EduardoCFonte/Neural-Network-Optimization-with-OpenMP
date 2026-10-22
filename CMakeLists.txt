@@ -21,6 +21,9 @@ set(SOURCES
     main.cpp
     matrix/matrix.cpp
     OpenMP_matrix.cpp/buffed_matrix.cpp
+    OpenMP_matrix.cpp/omega_buffed_matrix.cpp
+    OpenMP_matrix.cpp/nested_buffed_matrix.cpp
+    OpenMP_matrix.cpp/omega_matrix.cpp
 )
 
 add_executable(nn_inference ${SOURCES})
@@ -29,3 +32,7 @@ add_executable(nn_inference ${SOURCES})
 target_link_libraries(nn_inference PRIVATE OpenMP::OpenMP_CXX)
 
 target_compile_options(nn_inference PRIVATE -Wall -Wextra)
+
+add_executable(nn_sweep sweep_bench.cpp)
+target_link_libraries(nn_sweep PRIVATE OpenMP::OpenMP_CXX)
+target_compile_options(nn_sweep PRIVATE -Wall -Wextra)

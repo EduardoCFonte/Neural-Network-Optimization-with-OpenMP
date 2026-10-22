@@ -1,8 +1,33 @@
+# Compilação
 build/
 bin/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
 *.o
 *.out
+*.a
+*.so
+.cache/
+
+# Coletas brutas e logs (regeneráveis no cluster)
+vtune_*/
+vtune_sweep/
+*.log
+*.vtune
 perf.data*
 gmon.out
-.cache/
-compile_commands.json
+
+# Material de slide e cópias antigas (os gráficos publicados ficam em resultados/)
+apresentacao/
+slides_imagens/
+benchmark_results.csv
+benchmark_summary.txt
+grafico_*.svg
+painel_completo_*.svg
+
+# Editor
+.vscode/
+*.swp
+*~

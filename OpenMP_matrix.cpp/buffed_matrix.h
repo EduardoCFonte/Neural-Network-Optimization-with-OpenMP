@@ -1,27 +1,36 @@
 #pragma once
 
-#include <vector>
 #include <cstddef>
+#include <vector>
 
 class Buffed_Matrix {
 public:
     int rows;
     int cols;
-    std::vector<float> data;
     std::vector<float> bias;
 
     Buffed_Matrix(int r, int c);
-    ~Buffed_Matrix() = default;
+    ~Buffed_Matrix();
 
-    // Fast element access (r: row, c: column)
+    Buffed_Matrix(const Buffed_Matrix&) = delete;
+    Buffed_Matrix& operator=(const Buffed_Matrix&) = delete;
+
+    size_t weight_count() const {
+        return static_cast<size_t>(rows) * static_cast<size_t>(cols);
+    }
+
+    // Column c is contiguous.
     inline float& operator()(int r, int c) {
-        return data[r * cols + c];
+        return weights[static_cast<size_t>(c) * static_cast<size_t>(rows) + r];
     }
 
     inline const float& operator()(int r, int c) const {
-        return data[r * cols + c];
+        return weights[static_cast<size_t>(c) * static_cast<size_t>(rows) + r];
     }
 
-    // Forward pass: Y = ReLU(X * W + b)
+    // Y = ReLU(X * W + b)
     std::vector<float> forward_pass(const std::vector<float>& input) const;
+
+private:
+    float* weights;
 };
