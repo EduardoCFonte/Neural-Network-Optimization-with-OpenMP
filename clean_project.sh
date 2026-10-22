@@ -32,7 +32,7 @@ remove_old_dupes() {
     rm -f grafico_cpi.svg grafico_eficiencia.svg grafico_speedup.svg grafico_tempo_execucao.svg
     rm -f painel_completo_4graficos.svg
     echo "Removidos: vtune_sweep/, slides_imagens/, CSV/SVG antigos na raiz."
-    echo "(Gráficos finais ficam em apresentacao/; dados em apresentacao/dados/ e vtune_*/resultados*.csv)"
+    echo "(Published charts stay in resultados/.)"
 }
 
 case "$MODE" in
@@ -58,8 +58,8 @@ case "$MODE" in
 esac
 
 echo ""
-echo "Mantido de propósito:"
-echo "  Código: main.cpp, sweep_bench.cpp, matrix/, OpenMP_matrix.cpp/, CMakeLists.txt"
+echo "Kept:"
+echo "  Code: main.cpp, sweep_bench.cpp, matrix/, OpenMP_matrix.cpp/, CMakeLists.txt"
 echo "  Scripts: run_*vtune*.sh, run_benchmark_*.sh"
-echo "  Resultados úteis: vtune_*/resultados*.csv, relatorio*.md, vtune_*/reports/"
+echo "  Summaries: vtune_*/resultados*.csv, relatorio*.md, vtune_*/reports/"
 echo "  Slides: apresentacao/"

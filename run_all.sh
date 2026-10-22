@@ -56,12 +56,12 @@ for T in "${THREADS_LIST[@]}"; do
         TIME_S="0.00"
     fi
 
-    # Se for 1 thread, guarda o tempo base sequencial
+    # 1 thread is the sequential baseline.
     if [ "$T" -eq 1 ]; then
         T1_TIME="$TIME_S"
     fi
 
-    # Calcula Speedup e Eficiência via Python
+    # Speedup and efficiency from the 1-thread time.
     STATS=$(python3 -c "
 t1 = float('$T1_TIME') if float('$T1_TIME') > 0 else float('$TIME_S')
 tp = float('$TIME_S')
@@ -73,10 +73,10 @@ print(f'{sp:.2f},{eff:.1f}')
     SPEEDUP=$(echo "$STATS" | cut -d',' -f1)
     EFF=$(echo "$STATS" | cut -d',' -f2)
 
-    # Gera relatório resumido do VTune para parsing
+    # VTune summary used for the metrics below.
     vtune -report summary -report-knob show-issues=false -result-dir "$RESULT_DIR" > "$REPORT_FILE" 2>/dev/null || true
 
-    # Extrai métricas de microarquitetura do VTune
+    # Microarchitecture counters from the VTune summary.
     CPI=$(grep "CPI Rate:" "$REPORT_FILE" | head -n 1 | awk '{print $3}' || echo "N/A")
     CORES=$(grep "Effective Physical Core Utilization:" "$REPORT_FILE" | head -n 1 | grep -o '([0-9.]*' | tr -d '(' || echo "N/A")
     MEM_BOUND=$(grep "Memory Bound:" "$REPORT_FILE" | head -n 1 | awk '{print $3}' | tr -d '%' || echo "N/A")
@@ -86,11 +86,11 @@ print(f'{sp:.2f},{eff:.1f}')
     echo "$T,$TIME_S,$SPEEDUP,$EFF,$CPI,$CORES,$MEM_BOUND,$NUMA,$DRAM_BW" >> "$CSV_FILE"
 
     echo ""
-    echo "✓ [CONCLUÍDO $T THREADS] Tempo: ${TIME_S}s | Speedup: ${SPEEDUP}x | Efic: ${EFF}% | CPI: ${CPI} | Cores: ${CORES}"
+    echo "done $T threads  time=${TIME_S}s  speedup=${SPEEDUP}x  eff=${EFF}%  cpi=${CPI}  cores=${CORES}"
     echo ""
 done
 
-# Gera o resumo formatado em texto e tabela Markdown
+# Text summary of the CSV.
 python3 -c "
 import csv
 
@@ -102,9 +102,9 @@ with open('$CSV_FILE', mode='r') as f:
 
 output = []
 output.append('=' * 88)
-output.append('            TABELA CONSOLIDADA DE RESULTADOS (BUFFED_MATRIX)')
+output.append('            RESULT TABLE (BUFFED_MATRIX)')
 output.append('=' * 88)
-output.append(f'{\"Threads\":<8} | {\"Tempo (s)\":<10} | {\"Speedup\":<8} | {\"Eficiência\":<11} | {\"CPI\":<6} | {\"Núcleos\":<8} | {\"NUMA Rem\":<9} | {\"DRAM BW\":<8}')
+output.append(f'{\"Threads\":<8} | {\"Time (s)\":<10} | {\"Speedup\":<8} | {\"Efficiency\":<11} | {\"CPI\":<6} | {\"Cores\":<8} | {\"NUMA rem\":<9} | {\"DRAM BW\":<8}')
 output.append('-' * 88)
 
 for r in lines:
@@ -119,10 +119,10 @@ for r in lines:
     output.append(f'{t:<8} | {ts:<10} | {sp:<8} | {eff:<11} | {cpi:<6} | {cores:<8} | {numa:<9} | {bw:<8}')
 
 output.append('=' * 88)
-output.append('Notas:')
-output.append('  • 20 Threads: 100% dos núcleos físicos sem Hyper-Threading.')
-output.append('  • 21 Threads: Ponto exato de início de compartilhamento de núcleo (Hyper-Threading).')
-output.append('  • 32 Threads: 20 núcleos físicos + 12 threads em núcleos lógicos concorrentes.')
+output.append('Notes:')
+output.append('  • 20 threads: one thread per physical core.')
+output.append('  • 21 threads: the first thread that shares a physical core.')
+output.append('  • 32 threads: 20 physical cores plus 12 extra logical threads.')
 output.append('=' * 88)
 
 text = '\n'.join(output)
@@ -134,9 +134,9 @@ with open('$SUMMARY_FILE', 'w') as f_out:
 
 echo ""
 echo "========================================================================"
-echo "  TODOS OS TESTES CONCLUÍDOS COM SUCESSO!"
-echo "  Resultados salvos no cluster em:"
-echo "    • $CSV_FILE (Planilha CSV)"
-echo "    • $SUMMARY_FILE (Relatório Formatado)"
+echo "  All runs finished."
+echo "  Results:"
+echo "    • $CSV_FILE"
+echo "    • $SUMMARY_FILE"
 echo "========================================================================"
 echo ""

@@ -32,7 +32,7 @@ pin_clock() {
     local avail chosen
 
     if [ ! -d "$cpu0" ]; then
-        echo "cpufreq não está visível neste nó (pulando fixação de clock)."
+        echo "cpufreq is not available on this node; leaving the clock unchanged."
         return 0
     fi
 
@@ -51,7 +51,7 @@ pin_clock() {
         fi
     fi
 
-    echo "Fixando todos os núcleos em ${freq} kHz ($(awk -v f="$freq" 'BEGIN{printf "%.3f GHz", f/1000000}'))"
+    echo "Pinning every core to ${freq} kHz ($(awk -v f="$freq" 'BEGIN{printf "%.3f GHz", f/1000000}'))"
     local i
     for i in $(seq 0 $(($(nproc) - 1))); do
         if command -v cpufreq-set >/dev/null 2>&1; then
@@ -100,8 +100,8 @@ for BENCH in "${BENCHMARKS[@]}"; do
 
             BATCH_N=$(grep "^BATCH:" "$LOG_FILE" | head -n 1 | cut -d':' -f2 | tr -d ' ' || true)
             if [ "$BATCH_N" != "1" ]; then
-                echo "A execução cronometrou BATCH=$BATCH_N, não 1 inferência."
-                echo "O binário no cluster está velho. Envie sweep_bench.cpp de novo e rode o script outra vez."
+                echo "Timed BATCH=$BATCH_N, expected 1 inference."
+                echo "The binary is stale. Rebuild and run the script again."
                 exit 1
             fi
 
@@ -183,13 +183,13 @@ bench_desc = {
 lines = []
 lines.append("# Varredura VTune — dois benchmarks")
 lines.append("")
-lines.append("Cada linha é um processo com `vtune -collect hpc-performance`.")
-lines.append("Speedup e eficiência usam o tempo de **1 thread do mesmo benchmark e modo**.")
+lines.append("Each row is one `vtune -collect hpc-performance` process.")
+lines.append("Speedup and efficiency use the **1-thread** time of the same benchmark and mode.")
 lines.append("")
 lines.append("Colunas: benchmark, topology, mode, threads, time_s, speedup, efficiency_pct, cpi, cores_util, memory_bound_pct, numa_remote_pct, dram_bw_gbs, checksum.")
 lines.append("")
 
-header = "| Threads | Tempo (s) | Speedup | Eficiência | CPI | Núcleos | Memory bound | NUMA remoto | DRAM (GB/s) |"
+header = "| Threads | Time (s) | Speedup | Efficiency | CPI | Cores | Memory bound | Remote NUMA | DRAM (GB/s) |"
 sep = "| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"
 
 seen = []

@@ -30,7 +30,7 @@ pin_clock() {
     local avail chosen
 
     if [ ! -d "$cpu0" ]; then
-        echo "cpufreq não está visível neste nó (pulando fixação de clock)."
+        echo "cpufreq is not available on this node; leaving the clock unchanged."
         return 0
     fi
 
@@ -49,7 +49,7 @@ pin_clock() {
         fi
     fi
 
-    echo "Fixando todos os núcleos em ${freq} kHz ($(awk -v f="$freq" 'BEGIN{printf "%.3f GHz", f/1000000}'))"
+    echo "Pinning every core to ${freq} kHz ($(awk -v f="$freq" 'BEGIN{printf "%.3f GHz", f/1000000}'))"
     local i
     for i in $(seq 0 $(($(nproc) - 1))); do
         if command -v cpufreq-set >/dev/null 2>&1; then
@@ -105,8 +105,8 @@ for BENCH in "${BENCHMARKS[@]}"; do
 
         BATCH_N=$(grep "^BATCH:" "$LOG_FILE" | head -n 1 | cut -d':' -f2 | tr -d ' ' || true)
         if [ "$BATCH_N" != "1" ]; then
-            echo "A execução cronometrou BATCH=$BATCH_N, não 1 inferência."
-            echo "Reenvie sweep_bench.cpp e rode o script de novo."
+            echo "Timed BATCH=$BATCH_N, expected 1 inference."
+            echo "The binary is stale. Rebuild and run the script again."
             exit 1
         fi
 
@@ -178,9 +178,9 @@ lines = [
     "",
     bench_desc.get(bench, ""),
     "",
-    "Speedup e eficiência relativos ao tempo com **1 thread** neste mesmo benchmark.",
+    "Speedup and efficiency are relative to **1 thread** on this benchmark.",
     "",
-    "| Threads | Tempo (s) | Speedup | Eficiência | CPI | Núcleos | Memory bound | NUMA remoto |",
+    "| Threads | Time (s) | Speedup | Efficiency | CPI | Cores | Memory bound | Remote NUMA |",
     "| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
 ]
 
@@ -209,7 +209,7 @@ print(f"Escrito: {csv_path} e {md_path}")
 PY
 
     echo ""
-    echo "Concluído ($BENCH). Pasta: $OUT_DIR/"
+    echo "Done ($BENCH). Output: $OUT_DIR/"
 done
 
 echo ""
